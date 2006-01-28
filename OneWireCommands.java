@@ -23,11 +23,18 @@ public class OneWireCommands {
        
     public OneWireCommands() {
         //hard coded the lights for right now
+        switches[0] = new String("830000000E0ACC05");
+        switches[1] = new String("C60000000E153305");
+        switches[2] = new String("750000000E178205");
+        switches[3] = new String("450000000E19AD05");
+        switches[4] = new String("2C0000000E1B2D05");
+        /*
         switches[0] = new String("AE0000000E19A805");
         switches[1] = new String("A60000000E112C05");
         switches[2] = new String("BB0000000E069D05");
         switches[3] = new String("F80000000E1A7C05");
         switches[4] = new String("660000000E169505");
+        */
         try {
             this.adapter = OneWireAccessProvider.getDefaultAdapter();
         }catch( Exception e ) {
@@ -36,6 +43,9 @@ public class OneWireCommands {
     }
     
     public int drop ( int slot ) {
+        byte[] state = {0,0,0};
+        boolean latch = false;
+        OneWireContainer05 owc = null; 
         try {
         //check if slot is empty
         if( isEmpty( slot ) ) {
@@ -46,38 +56,50 @@ public class OneWireCommands {
         adapter.beginExclusive( true );
         //Get the switch and current state
         System.out.println( "Getting Switch" );
-        OneWireContainer05 owc = getSwitch( switches[slot] );
-        byte[] state = owc.readDevice();
-        boolean latch = owc.getLatchState( 0, state );
+        owc = getSwitch( switches[slot] );
+        state = owc.readDevice();
+        latch = owc.getLatchState( 0, state );
+        }catch( Exception e ) {
+            e.printStackTrace();
+        }
         
         if( latch == true ) {
             System.out.println( "LATCHED!?" );
-            throw new Exception();
         }
         System.out.println( "Motor on!" );
         //toggle the motor on 
-        owc.setLatchState( 0, !latch, false, state );
-        owc.writeDevice( state );
+        try {
+            owc.setLatchState( 0, !latch, false, state );
+            owc.writeDevice( state );
+        }catch( OneWireIOException e ) {
+            e.printStackTrace();
+        }catch( OneWireException e ) {}
         
         System.out.println( "Wait!" );
         //do the 2 second wait
-        Thread.sleep( 1000 );
+        try {
+            Thread.sleep( 1500 );
+        }catch( Exception e ) {}
         
         System.out.println( "Motor off!" );
         //turn the motor off
-        state = owc.readDevice();
-        latch = owc.getLatchState( 0, state );
-        owc.setLatchState( 0, !latch, false, state );
-        owc.writeDevice( state );
-        
-        //check is empty for status?
-        }catch( Exception e ) {
-            System.out.println( "Oh Snap, again." );
-            e.printStackTrace();
-        }finally{
-            //end use of the bus
-            adapter.endExclusive();
+        for( int x = 0; x < 3; x++ ) {
+            try {
+                state = owc.readDevice();
+                latch = owc.getLatchState( 0, state );
+                owc.setLatchState( 0, false, false, state );
+                System.out.println( "Sending Motor Off" );
+                owc.writeDevice( state );
+            }catch( OneWireIOException e ) {
+                e.printStackTrace();
+            }catch( OneWireException e ){
+                e.printStackTrace();
+            }
         }
+        //check is empty for status?
+        
+        //end use of the bus
+        adapter.endExclusive();
         return 0; 
     }
 
