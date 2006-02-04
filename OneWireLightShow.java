@@ -28,10 +28,6 @@ public class OneWireLightShow extends OneWireCommands {
         return owc;
     }
 
-    private void clearLights() {
-        
-    }
-
     private void getSwitchStates( OneWireContainer05[] owc, byte[][] stateOff, byte[][] stateOn ) {
         try {
             for( int x = 0; x < owc.length; x++ ) {
@@ -58,15 +54,8 @@ public class OneWireLightShow extends OneWireCommands {
     public void knightRider( boolean loopForever, int loops ) {
         int x = 0;
 
-        //OneWireContainer05[] owc = getLightSwitches();
-
-        //byte[][] stateOff = new byte[5][];
-        //byte[][] stateOn = new byte[5][];
         do { //this will keep this fun thing looping even after it exceptions
             try {
-                //lets get the on and off states of all the lights
-                //getSwitchStates( owc, stateOff, stateOn );
-
                 do { //make the lights flash.. here's the sequece
                     owc[0].writeDevice( stateOn[0] );
                     owc[4].writeDevice( stateOn[4] );
@@ -88,6 +77,9 @@ public class OneWireLightShow extends OneWireCommands {
                     
                     x++;
                 } while ( loopForever || x < loops );
+
+                owc[0].writeDevice( stateOff[0] );
+                owc[4].writeDevice( stateOff[4] );
             }catch( Exception e ) {
                 System.out.println( "Oh Shazbot!" );
                 e.printStackTrace();
@@ -136,6 +128,45 @@ public class OneWireLightShow extends OneWireCommands {
 
                     x++;
                 } while ( loopForever || x < loops );
+
+                owc[0].writeDevice( stateOff[0] );
+            }catch( Exception e ) {
+                System.out.println( "Oh Shazbot!" );
+                e.printStackTrace();
+            }
+        } while ( loopForever || x < loops );
+    }
+
+    public void worm() {
+        knightRider( true, 0 );
+    }
+    public void worm( boolean loopForever ) {
+        knightRider( loopForever, 0 );
+    }
+    public void worm( int loops ) {
+        knightRider( false, loops );
+    }
+    public void worm( boolean loopForever, int loops ) {
+        int x = 0;
+        do { //this will keep this fun thing looping even after it exceptions
+            try {
+                do { //make the lights flash.. here's the sequece
+                    owc[4].writeDevice( stateOff[4] );
+
+                    owc[0].writeDevice( stateOn[0] );
+                    owc[1].writeDevice( stateOn[1] );
+                    owc[2].writeDevice( stateOn[2] );
+                    owc[0].writeDevice( stateOff[0] );
+                    owc[3].writeDevice( stateOn[3] );
+                    owc[1].writeDevice( stateOff[1] );
+                    owc[4].writeDevice( stateOn[4] );
+                    owc[2].writeDevice( stateOff[2] );
+                    owc[3].writeDevice( stateOff[3] );
+                    
+                    
+                    x++;
+                } while ( loopForever || x < loops );
+            
             }catch( Exception e ) {
                 System.out.println( "Oh Shazbot!" );
                 e.printStackTrace();
