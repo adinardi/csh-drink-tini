@@ -1,4 +1,5 @@
 import java.net.*;
+import java.io.*;
 
 /**
  * @author Angelo DiNardi (adinardi@csh.rit.edu)
@@ -14,10 +15,17 @@ public class CommLink{
     public void StartConnection() {
         try {
             //connect to the drink server?
-            socket = new Socket( "drink", 4343 );
+            socket = new Socket( "danlaptop", 4343 );
+            System.out.println( "Connected" );
         }catch( Exception e ) {
             e.printStackTrace();
         }
+        inlink = new IncomingLink( socket );
+        inlink.start();
+
+        outlink = new OutgoingLink( socket );
+        outlink.start();
+        outlink.sendLogin();
     }
 
     class IncomingLink extends Thread {
@@ -31,48 +39,113 @@ public class CommLink{
         } 
 
         private void listen() {
-            InputStream in = socket.getInputStream();
-            
-            byte[] opcode;
-            byte[] data;
-            byte[] odata;
-            byte temp;
-            String msg = null;
+            InputStream in = null;
+            try {
+                in = socket.getInputStream();
+            }catch( Exception e ) {
+                e.printStackTrace();
+            }
+
+            int opcode = 0;
+            String data = null;
+            String fullLine = null;
+            //int[] odata;
+            //int temp;
+            //String datamsg = null;
+            //Long opcodemsg; 
             int lo = 0; //length opcode
             int ld = 0; //length data
-            
+
+            boolean active = true;
+            BufferedReader read = new BufferedReader( new InputStreamReader( in ) );
+
             while( active ) {
-                lo = 0;
-                ld = 0;
-                opcode = new byte[4];
-                data = new byte[1];
-                
-                while( x < 4 ) {
-                    opcode[lo] = in.read();
-                    lo++;
+                try {
+                    fullLine = read.readLine();
+                    System.out.println( "Raw Crap: " + fullLine );
+                }catch( SocketException e ) {
+                    //active = false;
+                    e.printStackTrace();
+                    break;
+                }catch( Exception e ) {
+                    e.printStackTrace();
                 }
-                
-                //read bytes in until end of message
-                if( (temp = in.read()) != null ) {
-                    odata = data;
-                    ld++;
-                    data = new byte[ld+1];
-                    for( int q = 0; q < odata.length; q++ ) {
-                        data[q] = odata[q];
-                    }
-                    data[ld] = temp;
-                    temp = null;
-                    odata = null;
+                if( fullLine == null ) {
+                    active = false;
+                    break;
                 }
-                //convert our bytes into a real message
-                msg = new String( data );
+
+                //System.out.println( read.readLine() );
+                opcode = Integer.parseInt( fullLine.substring(0,1) );
+                data = fullLine.substring(1, fullLine.length()  );
+                switch( opcode ) {
+                    case -1:
+                        //Um, no?
+                        break;
+                    case 1:
+                        //Login ACK
+                        System.out.println( "Login ACK!" );
+                        break;
+                    case 2:
+                        //Login NACK
+                        System.out.println( "Login NACK!" );
+                        break;
+                    case 3:
+                        //drop slot
+                        System.out.println( "Drop Slot!" );
+                        outlink.sendDropACK();
+                        break;
+                    case 6:
+                        //Slot Status Req
+                        System.out.println( "Slot Status Req!" );
+                        break;
+                }
+                opcode = -1;
             }
 
         }
     }
 
     class OutgoingLink extends Thread {
+        Socket socket = null;
+        DataOutputStream out = null;
+        
+        public OutgoingLink( Socket socket ) {
+            this.socket = socket;
+        }
 
+        public void run() {
+            //do stuff
+        }
+
+        public void sendLogin() {
+            try {
+                out = new DataOutputStream(socket.getOutputStream());
+
+                out.writeBytes( "0" );
+                out.writeBytes( "password\n" );
+                out.flush();
+
+            }catch( Exception e ) {
+                e.printStackTrace();
+            }
+        }
+
+        public void sendDropACK() {
+            try {
+                out = new DataOutputStream(socket.getOutputStream());
+
+                out.writeBytes( "4\n" );
+                out.flush();
+                
+            }catch( Exception e ) {
+                e.printStackTrace();
+            }
+        }
     }
-
+    public static void main( String[] args ) {
+        CommLink c = new CommLink();
+        System.out.println( "Start Connection" );
+        c.StartConnection();
+    }
 }
