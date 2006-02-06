@@ -15,7 +15,7 @@ public class CommLink{
     public void StartConnection() {
         try {
             //connect to the drink server?
-            socket = new Socket( "danlaptop", 4343 );
+            socket = new Socket( "scorn", 4343 );
             System.out.println( "Connected" );
         }catch( Exception e ) {
             e.printStackTrace();
