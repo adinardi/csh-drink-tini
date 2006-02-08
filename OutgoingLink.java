@@ -24,6 +24,7 @@ class OutgoingLink extends Thread {
 
         }catch( Exception e ) {
             e.printStackTrace();
+            CommLink.getInstance().Reconnect();
         }
     }
 
@@ -36,6 +37,7 @@ class OutgoingLink extends Thread {
 
         }catch( Exception e ) {
             e.printStackTrace();
+            CommLink.getInstance().Reconnect();
         }
     }
 }

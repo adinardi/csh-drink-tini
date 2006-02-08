@@ -39,13 +39,19 @@ class IncomingLink extends Thread {
                 System.out.println( "Raw Crap: " + fullLine );
             }catch( SocketException e ) {
                 //active = false;
-                e.printStackTrace();
+                //e.printStackTrace();
+                System.out.println( "Lost Connection To Server" );
+                ConfigMgr.getInstance().setConnected( false );
+                CommLink.getInstance().Reconnect();
                 break;
             }catch( Exception e ) {
                 e.printStackTrace();
             }
             if( fullLine == null ) {
                 active = false;
+                System.out.println( "Lost Connection To Server" );
+                ConfigMgr.getInstance().setConnected( false );
+                CommLink.getInstance().Reconnect();
                 break;
             }
 
@@ -67,7 +73,10 @@ class IncomingLink extends Thread {
                 case 3:
                     //drop slot
                     System.out.println( "Drop Slot!" );
+                    OneWireCommands owc = new OneWireCommands();
+                    owc.drop( Integer.parseInt(data) );
                     CommLink.getInstance().getOutgoingLink().sendDropACK();
+                    owc = null;
                     break;
                 case 6:
                     //Slot Status Req
