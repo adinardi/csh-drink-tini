@@ -77,6 +77,9 @@ public class OneWireCommands {
             //check if slot is empty
             if( isEmpty( slot ) ) {
                 //return empty code
+                System.out.println( "Slot is empty!" );
+                CommLink.getInstance().getOutgoingLink().sendDropNACK();
+                return 0;
             } 
             System.out.println( "Getting Exclusive" );
             //grab exclusive
@@ -124,7 +127,7 @@ public class OneWireCommands {
             }
         }
         //check is empty for status?
-
+        isEmpty( slot );
         //end use of the bus
         adapter.endExclusive();
         return 0; 
@@ -132,17 +135,21 @@ public class OneWireCommands {
 
     public boolean isEmpty( int slot ) {
         System.out.println( "Checking Slot: " + switches[slot] );
+        boolean last = empty[slot];
         try { 
-        if( this.adapter.isPresent( switches[slot] ) ) {
-            empty[slot] = false;
-        }else{
-            empty[slot] = true;
-        }
+            if( this.adapter.isPresent( switches[slot] ) ) {
+                empty[slot] = false;
+            }else{
+                empty[slot] = true;
+            }
         }catch( Exception e ) {
             System.out.println( "Unable to get slot: " + slot );
             e.printStackTrace();
         }
-        
+        if( empty[slot] != last ) {
+            CommLink.getInstance().getOutgoingLink().sendSlotInfo( slot, empty[slot] );
+        }
+
         return empty[slot]; 
     }
 
@@ -171,7 +178,7 @@ public class OneWireCommands {
         OneWireContainer28 owc = (OneWireContainer28) this.adapter.getDeviceContainer( "B80000000D93E528" );
 
         double temp = 0;
-        
+
         try {
             byte[] state = owc.readDevice();
             owc.doTemperatureConvert( state );
@@ -180,5 +187,9 @@ public class OneWireCommands {
 
         }
         return temp;
+    }
+
+    public boolean[] getEmptyInfo() {
+        return empty;
     }
 }

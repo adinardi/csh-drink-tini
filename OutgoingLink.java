@@ -2,6 +2,9 @@ import java.util.*;
 import java.io.*;
 import java.net.*;
 
+/**
+ * @author Angelo DiNardi (adinardi@csh.rit.edu)
+ */
 class OutgoingLink extends Thread {
     Socket socket = null;
     DataOutputStream out = null;
@@ -48,10 +51,56 @@ class OutgoingLink extends Thread {
             out.writeBytes( "8" );
             out.writeBytes( (new Double(temp)).toString() );
             out.writeBytes( "\n" );
-            System.out.println( temp );
+            
+            out.flush();
             
         }catch( Exception e ) {
+            CommLink.getInstance().Reconnect();
+        }
+    }
 
+    public void sendDropNACK() {
+        try {
+            out = new DataOutputStream( socket.getOutputStream() );
+
+            out.writeBytes( "5\n" );
+            out.flush();
+        }catch( Exception e ) {
+            CommLink.getInstance().Reconnect();
+        }
+    }
+
+    public void sendSlotInfo( int slot, boolean empty ) {
+        try {
+            out = new DataOutputStream( socket.getOutputStream() );
+
+            out.writeBytes( "7" );
+
+            out.writeBytes( "" + slot + " " + (empty ? 1 : 0) );
+            out.writeBytes( "\n" );
+
+            out.flush();
+        }catch( Exception e ) {
+            CommLink.getInstance().Reconnect();
+        }
+    }
+
+    public void sendSlotInfo( boolean[] empty ) {
+        try {
+            out = new DataOutputStream( socket.getOutputStream() );
+
+            out.writeBytes( "7" );
+
+            for( int x = 1; x < 6; x++ ) {
+                if( x > 1 ) {
+                    out.writeBytes( "`" );
+                }
+                out.writeBytes( "" + x + " " + ( empty[x] ? 1 : 0 ) );
+            }
+            
+            out.flush();
+        }catch( Exception e ) {
+            CommLink.getInstance().Reconnect();
         }
     }
 }

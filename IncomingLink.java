@@ -1,6 +1,9 @@
 import java.io.*;
 import java.net.*;
 
+/**
+ * @author Angelo DiNardi (adinardi@csh.rit.edu)
+ */
 class IncomingLink extends Thread {
     Socket socket = null;
     
@@ -73,14 +76,13 @@ class IncomingLink extends Thread {
                 case 3:
                     //drop slot
                     System.out.println( "Drop Slot!" );
-                    OneWireCommands owc = new OneWireCommands();
-                    owc.drop( Integer.parseInt(data) );
+                    OneWireCommands.getInstance().drop( Integer.parseInt(data) );
                     CommLink.getInstance().getOutgoingLink().sendDropACK();
-                    owc = null;
                     break;
                 case 6:
                     //Slot Status Req
                     System.out.println( "Slot Status Req!" );
+                    CommLink.getInstance().getOutgoingLink().sendSlotInfo( OneWireCommands.getInstance().getEmptyInfo() );
                     break;
             }
             opcode = -1;

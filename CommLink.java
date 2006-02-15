@@ -6,6 +6,9 @@ import java.io.*;
  */
 public class CommLink{
 
+    private String host = "scorn";
+    private int port = 4343;
+    
     private Socket socket = null;
 
     private IncomingLink inlink = null;
@@ -14,10 +17,15 @@ public class CommLink{
 
     private static CommLink instance = null;
     
+    public void setConnectionInfo( String host, int port ) {
+        this.host = host;
+        this.port = port;
+    }
+    
     public void StartConnection() {
         try {
             //connect to the drink server?
-            socket = new Socket( "scorn", 4343 );
+            socket = new Socket( host, port );
             System.out.println( "Connected" );
         }catch( Exception e ) {
             //e.printStackTrace();
@@ -43,7 +51,7 @@ public class CommLink{
             
             StartConnection();
             try {
-                Thread.sleep( 1000 );
+                Thread.sleep( 30000 );
             }catch( Exception e ) {
 
             }
@@ -55,7 +63,7 @@ public class CommLink{
         while( ConfigMgr.getInstance().getConnected() == false ) {
             System.out.println( "Reconnecting..." );
             try {
-                Thread.sleep( 1000 );
+                Thread.sleep( 30000 );
             }catch( Exception e ) {
 
             }
@@ -79,9 +87,4 @@ public class CommLink{
         return instance;
     }
 
-    public static void main( String[] args ) {
-        CommLink c = CommLink.getInstance();
-        System.out.println( "Start Connection" );
-        c.Connect();
-    }
 }
