@@ -160,6 +160,7 @@ public class OneWireCommands {
         if( empty[slot] != last ) {
             CommLink.getInstance().getOutgoingLink().sendSlotInfo( slot, empty[slot] );
         }
+        OneWireLights.getInstance().slotStatus( slot, empty[slot] );
 
         return empty[slot]; 
     }
@@ -180,6 +181,7 @@ public class OneWireCommands {
                 //if( empty[x] != last ) {
                 //this should always just be a change
                 CommLink.getInstance().getOutgoingLink().sendSlotInfo( x, empty[x] );
+                OneWireLights.getInstance().slotStatus( x, empty[x] );
                 //}
             }
         }
