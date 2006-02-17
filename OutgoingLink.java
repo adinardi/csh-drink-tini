@@ -22,7 +22,9 @@ class OutgoingLink extends Thread {
             out = new DataOutputStream(socket.getOutputStream());
 
             out.writeBytes( "0" );
-            out.writeBytes( "password\n" );
+            //this should eventually pull from a config
+            out.writeBytes( "password" );
+            out.writeBytes( "\n" );
             out.flush();
 
         }catch( Exception e ) {
@@ -46,6 +48,8 @@ class OutgoingLink extends Thread {
 
     public void sendTemp( double temp ) {
         try {
+
+            System.out.println( "Temp: " +  (new Double(temp)).toString() );
             out = new DataOutputStream( socket.getOutputStream() );
             
             out.writeBytes( "8" );
@@ -76,7 +80,7 @@ class OutgoingLink extends Thread {
 
             out.writeBytes( "7" );
 
-            out.writeBytes( "" + slot + " " + (empty ? 1 : 0) );
+            out.writeBytes( "" + slot + " " + (empty ? 0 : 1) );
             out.writeBytes( "\n" );
 
             out.flush();
@@ -95,8 +99,9 @@ class OutgoingLink extends Thread {
                 if( x > 1 ) {
                     out.writeBytes( "`" );
                 }
-                out.writeBytes( "" + x + " " + ( empty[x] ? 1 : 0 ) );
+                out.writeBytes( "" + x + " " + ( empty[x] ? 0 : 1 ) );
             }
+            out.writeBytes( "\n" );
             
             out.flush();
         }catch( Exception e ) {

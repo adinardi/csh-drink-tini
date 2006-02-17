@@ -1,5 +1,5 @@
 TINICODE = ../tini1.02g/
-TINICONVLINE = java -classpath ../tini1.02g/bin/tini.jar BuildDependency -d ../tini1.02g/bin/tini.db -add OneWireContainer05 -add OneWireContainer28 -x ../tini1.02g/bin/owapi_dep.txt -p ../tini1.02g/bin/owapi_dependencies_TINI.jar 
+TINICONVLINE = java -classpath ../tini1.02g/bin/tini.jar BuildDependency -d ../tini1.02g/bin/tini.db -add OneWireContainer05 -add OneWireContainer28 -add OneWireMonitor -x ../tini1.02g/bin/owapi_dep.txt -p ../tini1.02g/bin/owapi_dependencies_TINI.jar 
 
 
 default: commlinktest
@@ -11,7 +11,7 @@ lightshow: compile
 	java -classpath tini1.02g/bin/tini.jar BuildDependency -f OneWireCommands.class -f Tester.class -f OneWireLightShow.class -d tini1.02g/bin/tini.db -o Tester.tini -add OneWireContainer05 -x tini1.02g/bin/owapi_dep.txt -p tini1.02g/bin/owapi_dependencies_TINI.jar
 
 commlinktest: compile
-	$(TINICONVLINE) -f OneWireCommands.class -f CommLink.class -f IncomingLink.class -f OutgoingLink.class -f ConfigMgr.class -f Starter.class -f TempWorker.class -m Starter -o Starter.tini 
+	$(TINICONVLINE) -f OneWireCommands.class -f OneWireLightShow.class -f SlotMonitorListener.class -f CommLink.class -f IncomingLink.class -f OutgoingLink.class -f ConfigMgr.class -f Starter.class -f TempWorker.class -m Starter -o Starter.tini 
 clean: 
-	rm *.class
+	rm *.class *.tini
 

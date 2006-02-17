@@ -1,3 +1,4 @@
+/*
 public class Tester {
     public static void main(String[] args) {
         OneWireLightShow owc = new OneWireLightShow();
@@ -11,4 +12,4 @@ public class Tester {
             }
         }
     }
-}
+}*/

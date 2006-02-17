@@ -67,8 +67,9 @@ public class CommLink{
             }catch( Exception e ) {
 
             }
-
-            StartConnection();
+            if( ConfigMgr.getInstance().getConnected() == false ) {
+                StartConnection();
+            }
         }
     }
 

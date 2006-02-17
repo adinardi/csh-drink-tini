@@ -15,6 +15,7 @@ import com.dalsemi.onewire.*;
 import com.dalsemi.onewire.adapter.*;
 import com.dalsemi.onewire.container.*;
 import com.dalsemi.onewire.utils.*;
+import com.dalsemi.onewire.application.monitor.*;
 
 public class OneWireCommands {
     private DSPortAdapter adapter = null;
@@ -23,6 +24,8 @@ public class OneWireCommands {
     protected String[] lights = new String[6];
     protected boolean[] empty = new boolean[6];
 
+    private DeviceMonitor dm = null;
+    
     private static OneWireCommands instance = null;
     
     public static OneWireCommands getInstance() {
@@ -60,13 +63,12 @@ public class OneWireCommands {
         for( int q = 1; q <= 5; q++ ) {
             isEmpty( q );
         }
-        System.out.println( "Checked Slots" );
+        System.out.println( "Checked All Slots" );
         
-        try {
-            this.adapter = OneWireAccessProvider.getDefaultAdapter();
-        }catch( Exception e ) {
-            System.out.println( "Oh Snap. Can't get adapter." ); 
-        }
+        dm = new DeviceMonitor( adapter );
+        dm.addDeviceMonitorEventListener( new SlotMonitorListener() );
+        Thread dmrun = new Thread( dm );
+        dmrun.start();
     }
 
     public int drop ( int slot ) {
@@ -175,6 +177,7 @@ public class OneWireCommands {
     }
 
     public double readTemp() {
+        dm.pauseMonitor( true );
         OneWireContainer28 owc = (OneWireContainer28) this.adapter.getDeviceContainer( "B80000000D93E528" );
 
         double temp = 0;
@@ -186,6 +189,7 @@ public class OneWireCommands {
         }catch( Exception e ) {
 
         }
+        dm.resumeMonitor( false );
         return temp;
     }
 

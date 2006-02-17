@@ -14,5 +14,11 @@ class Starter {
         //start up our minutely temperature sensor/sender
         TempWorker temp = new TempWorker();
         temp.start();
+
+        /*
+        OneWireLightShow owls = OneWireLightShow.getInstance();
+        Thread owlst = new Thread(owls);
+        owlst.start();
+        */
     }
 }
