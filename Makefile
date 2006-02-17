@@ -15,3 +15,6 @@ commlinktest: compile
 clean: 
 	rm *.class *.tini
 
+javadoc:
+	javadoc -private -d docs -verbose *
+	cp -R docs/ /users/u12/adinardi/public_html/littledrink

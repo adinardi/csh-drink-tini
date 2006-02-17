@@ -5,10 +5,6 @@
  *
  */
 
-/**
- *This is the fun class that will handle 1-wire commands on the tinis 
- *@author Angelo DiNardi
- */
 import java.util.*;
 import java.io.*;
 import com.dalsemi.onewire.*;
@@ -17,6 +13,12 @@ import com.dalsemi.onewire.container.*;
 import com.dalsemi.onewire.utils.*;
 import com.dalsemi.onewire.application.monitor.*;
 
+
+/**
+ * This is the fun class that will handle 1-wire commands on the tinis 
+ * 
+ * @author Angelo DiNardi
+ */
 public class OneWireCommands {
     private DSPortAdapter adapter = null;
     //Stuff here.
@@ -75,6 +77,9 @@ public class OneWireCommands {
         byte[] state = {0,0,0};
         boolean latch = false;
         OneWireContainer05 owc = null; 
+        
+        dm.pauseMonitor( true );
+        
         try {
             //check if slot is empty
             if( isEmpty( slot ) ) {
@@ -128,10 +133,14 @@ public class OneWireCommands {
                 e.printStackTrace();
             }
         }
+
+        //****Replaced by DM?*****
         //check is empty for status?
-        isEmpty( slot );
+        //isEmpty( slot );
+        
         //end use of the bus
         adapter.endExclusive();
+        dm.resumeMonitor( false );
         return 0; 
     }
 
@@ -155,6 +164,27 @@ public class OneWireCommands {
         return empty[slot]; 
     }
 
+    /**
+     * Set the empty state of a 1-wire switch device
+     *
+     * @param id 64-bit 1-wire device id
+     * @param isempty True if slot is empty
+     */
+    public void setEmpty( String id, boolean isempty ) {
+        for( int x = 1; x < switches.length; x++ ) {
+            if( switches[x].equals( id ) ) {
+                boolean last = empty[x];
+
+                empty[x] = isempty;
+                
+                //if( empty[x] != last ) {
+                //this should always just be a change
+                CommLink.getInstance().getOutgoingLink().sendSlotInfo( x, empty[x] );
+                //}
+            }
+        }
+    }
+
     protected OneWireContainer05 getSwitch( String id ) {
         System.out.println( "Getting Slot: " + id );
         OneWireContainer owc = this.adapter.getDeviceContainer( id );
@@ -166,6 +196,11 @@ public class OneWireCommands {
         }
     }
 
+    /**
+     * Set the latch state of a DS2405
+     * 
+     * @deprecated
+     */
     protected void setLatch( OneWireContainer05 owc, boolean latch ) {
         try {
             byte[] state = owc.readDevice();
