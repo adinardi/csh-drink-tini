@@ -77,18 +77,22 @@ class IncomingLink extends Thread {
                     //drop slot
                     System.out.println( "Drop Slot!" );
                     //OneWireLightShow.getInstance().setStop( true );
-                    
-                    OneWireCommands.getInstance().drop( Integer.parseInt(data) );
-                    CommLink.getInstance().getOutgoingLink().sendDropACK();
-                    
+
+                    int stat = OneWireCommands.getInstance().drop( Integer.parseInt(data) );
+
+                    if( stat == 200 ) {
+                        CommLink.getInstance().getOutgoingLink().sendDropACK();
+                    }else{
+                        CommLink.getInstance().getOutgoingLink().sendDropNACK();
+                    }
                     //OneWireLightShow.getInstance().setStop( false );
                     break;
                 case 6:
                     //Slot Status Req
                     System.out.println( "Slot Status Req!" );
-                    
+
                     //OneWireLightShow.getInstance().setStop( true );
-                    
+
                     CommLink.getInstance().getOutgoingLink().sendSlotInfo( OneWireCommands.getInstance().getEmptyInfo() );
 
                     //OneWireLightShow.getInstance().setStop( false );

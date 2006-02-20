@@ -47,13 +47,15 @@ public class OneWireCommands {
         switches[4] = new String("450000000E19AD05");
         switches[5] = new String("2C0000000E1B2D05");
 
+        /*
         lights[0] = new String();
         lights[1] = new String("AE0000000E19A805");
         lights[2] = new String("A60000000E112C05");
         lights[3] = new String("BB0000000E069D05");
         lights[4] = new String("F80000000E1A7C05");
         lights[5] = new String("660000000E169505");
-
+        */
+        
         try {
             this.adapter = OneWireAccessProvider.getDefaultAdapter();
         }catch( Exception e ) {
@@ -62,11 +64,20 @@ public class OneWireCommands {
         
         System.out.println( "Check Empty Slots" );
         //run through all the switches and check empty state
+        /*
         for( int q = 1; q <= 5; q++ ) {
             isEmpty( q );
         }
         System.out.println( "Checked All Slots" );
-        
+        */
+
+        //reset all the slots to empty
+        for( int q = 1; q <= 5; q++ ) {
+            empty[q] = false;
+        }
+
+        //load the DeviceMonitor to watch the bus for slots to appear/disapear
+        //This will also find everything when it loads -- so the slots are activated
         dm = new DeviceMonitor( adapter );
         dm.addDeviceMonitorEventListener( new SlotMonitorListener() );
         Thread dmrun = new Thread( dm );
@@ -85,8 +96,8 @@ public class OneWireCommands {
             if( isEmpty( slot ) ) {
                 //return empty code
                 System.out.println( "Slot is empty!" );
-                CommLink.getInstance().getOutgoingLink().sendDropNACK();
-                return 0;
+                //CommLink.getInstance().getOutgoingLink().sendDropNACK();
+                return 304; //Slot is Empty
             } 
             System.out.println( "Getting Exclusive" );
             //grab exclusive
@@ -141,7 +152,7 @@ public class OneWireCommands {
         //end use of the bus
         adapter.endExclusive();
         dm.resumeMonitor( false );
-        return 0; 
+        return 200; 
     }
 
     public boolean isEmpty( int slot ) {
@@ -222,6 +233,7 @@ public class OneWireCommands {
         try {
             byte[] state = owc.readDevice();
             owc.doTemperatureConvert( state );
+            state = owc.readDevice(); //we have to read it again. Not sure why. Doesn't actually give temperature otherwise.
             temp = owc.getTemperature( state ) * (9.0/5.0) + 32.0;
         }catch( Exception e ) {
 
