@@ -8,6 +8,9 @@ class ConfigMgr {
      * The connected state of the client to the server
      */
     private boolean connected = false;
+
+    //1 based int for the number of slots in the system
+    private int numSlots = 5;
     
     private ConfigMgr() {
 
@@ -26,5 +29,9 @@ class ConfigMgr {
 
     public void setConnected( boolean s ) {
         connected = s;
+    }
+
+    public int getNumSlots() {
+        return numSlots;
     }
 }

@@ -27,9 +27,11 @@ public class OneWireCommands {
     protected boolean[] empty = new boolean[6];
 
     private DeviceMonitor dm = null;
+
+    private int numSlots = ConfigMgr.getInstance().getNumSlots();
     
     private static OneWireCommands instance = null;
-    
+
     public static OneWireCommands getInstance() {
         if( instance == null ) {
             instance = new OneWireCommands();
@@ -37,7 +39,7 @@ public class OneWireCommands {
 
         return instance;
     }
-    
+
     protected OneWireCommands() {
         //hard coded the lights for right now
         switches[0] = new String();
@@ -48,32 +50,35 @@ public class OneWireCommands {
         switches[5] = new String("2C0000000E1B2D05");
 
         /*
-        lights[0] = new String();
-        lights[1] = new String("AE0000000E19A805");
-        lights[2] = new String("A60000000E112C05");
-        lights[3] = new String("BB0000000E069D05");
-        lights[4] = new String("F80000000E1A7C05");
-        lights[5] = new String("660000000E169505");
-        */
-        
+         lights[0] = new String();
+         lights[1] = new String("AE0000000E19A805");
+         lights[2] = new String("A60000000E112C05");
+         lights[3] = new String("BB0000000E069D05");
+         lights[4] = new String("F80000000E1A7C05");
+         lights[5] = new String("660000000E169505");
+         */
+
         try {
             this.adapter = OneWireAccessProvider.getDefaultAdapter();
         }catch( Exception e ) {
             System.out.println( "Oh Snap. Can't get adapter." ); 
         }
-        
+
         System.out.println( "Check Empty Slots" );
         //run through all the switches and check empty state
         /*
-        for( int q = 1; q <= 5; q++ ) {
-            isEmpty( q );
-        }
-        System.out.println( "Checked All Slots" );
-        */
+         for( int q = 1; q <= 5; q++ ) {
+         isEmpty( q );
+         }
+         System.out.println( "Checked All Slots" );
+         */
 
         //reset all the slots to empty
-        for( int q = 1; q <= 5; q++ ) {
-            empty[q] = false;
+        for( int q = 1; q <= numSlots; q++ ) {
+            empty[q] = true;
+            
+            //initialize all the lights to empty to start
+            OneWireLights.getInstance().slotStatus( q, empty[q] );
         }
 
         //load the DeviceMonitor to watch the bus for slots to appear/disapear
@@ -88,9 +93,9 @@ public class OneWireCommands {
         byte[] state = {0,0,0};
         boolean latch = false;
         OneWireContainer05 owc = null; 
-        
+
         dm.pauseMonitor( true );
-        
+
         try {
             //check if slot is empty
             if( isEmpty( slot ) ) {
@@ -148,18 +153,24 @@ public class OneWireCommands {
         //****Replaced by DM?*****
         //check is empty for status?
         //isEmpty( slot );
-        
+
         //end use of the bus
         adapter.endExclusive();
         dm.resumeMonitor( false );
         return 200; 
     }
 
+    /**
+     * Check a slot's empty switch manually and if it has changed, notify the system.
+     *
+     * @param slot 1-based slot number to check
+     * @return True if the slot is empty
+     */
     public boolean isEmpty( int slot ) {
         System.out.println( "Checking Slot: " + switches[slot] );
-        boolean last = empty[slot];
+        boolean last = empty[slot]; //save the most recent empty state of the slot
         try { 
-            if( this.adapter.isPresent( switches[slot] ) ) {
+            if( this.adapter.isPresent( switches[slot] ) ) { //check if the 1-wire device for the slot is present
                 empty[slot] = false;
             }else{
                 empty[slot] = true;
@@ -168,10 +179,9 @@ public class OneWireCommands {
             System.out.println( "Unable to get slot: " + slot );
             e.printStackTrace();
         }
-        if( empty[slot] != last ) {
-            CommLink.getInstance().getOutgoingLink().sendSlotInfo( slot, empty[slot] );
+        if( empty[slot] != last ) { //empty status has changed
+            setEmpty( switches[slot], empty[slot] );
         }
-        OneWireLights.getInstance().slotStatus( slot, empty[slot] );
 
         return empty[slot]; 
     }
@@ -188,7 +198,7 @@ public class OneWireCommands {
                 boolean last = empty[x];
 
                 empty[x] = isempty;
-                
+
                 //if( empty[x] != last ) {
                 //this should always just be a change
                 CommLink.getInstance().getOutgoingLink().sendSlotInfo( x, empty[x] );
