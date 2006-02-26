@@ -79,15 +79,18 @@ public class CommLink{
             System.out.println( "Connecting..." );
             
             StartConnection();
-            try {
-                Thread.sleep( 30000 );
-            }catch( Exception e ) {
 
+            if( ConfigMgr.getInstance().getConnected() == false ) {
+                try {
+                    Thread.sleep( 30000 );
+                }catch( Exception e ) {
+
+                }
             }
 
         }
     }//Connect()
-    
+
     /**
      * Starts a reconnect cycle to the drink server on 30 second intervals.
      */

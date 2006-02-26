@@ -26,6 +26,11 @@ class ConfigMgr {
      */
     private String[] lights = new String[numSlots + 1]; //add one to make it a 1-based array
 
+    /**
+     * Contains the 1-Wire IDs of the Temp Monitors
+     */
+    private String[] temps = new String[1];
+
 
     private ConfigMgr() {
         /*
@@ -74,6 +79,10 @@ class ConfigMgr {
         return lights;
     }
 
+    public String[] getTemps() {
+        return temps;
+    }
+
     private void readConfig() {
         try {
         BufferedReader in = new BufferedReader( new FileReader("config") );
@@ -109,11 +118,25 @@ class ConfigMgr {
                 id = temp.substring(4);
                 System.out.println( "" + num + " : " + id );
                 this.lights[num] = id;
-                
+
+            }else if( temp.charAt(0) == 't' ) { //temp id
+                System.out.println( "Got Temp Row" );
+                if( temp.charAt(1) == 't' ) { //total #
+                    this.temps = new String[Integer.parseInt( temp.substring(2) ) ];
+                    System.out.println( "Got Temps Total: " + this.temps.length );
+                    continue;
+                }
+
+                num = Integer.parseInt(temp.substring(1,3));
+                id = temp.substring(4);
+                System.out.println( "" + num + " : " + id );
+                this.temps[num] = id;
+
             }
+
         }
         }catch( Exception e ) {
-            
+
         }
 
     }

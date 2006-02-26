@@ -226,14 +226,14 @@ public class OneWireCommands {
 
     public double readTemp() {
         dm.pauseMonitor( true );
-        OneWireContainer28 owc = (OneWireContainer28) this.adapter.getDeviceContainer( "B80000000D93E528" );
+        OneWireContainer28 owc = (OneWireContainer28) this.adapter.getDeviceContainer( ConfigMgr.getInstance().getTemps()[0] );
 
         double temp = 0;
 
         try {
             byte[] state = owc.readDevice();
             owc.doTemperatureConvert( state );
-            state = owc.readDevice(); //we have to read it again. Not sure why. Doesn't actually give temperature otherwise.
+            state = owc.readDevice(); //we have to read it again. Doesn't actually give temperature otherwise.
             temp = owc.getTemperature( state ) * (9.0/5.0) + 32.0;
         }catch( Exception e ) {
 
