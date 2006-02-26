@@ -20,6 +20,10 @@ class Starter {
         TempWorker temp = new TempWorker();
         temp.start();
 
+        CollectGarbage cg = new CollectGarbage();
+        Thread cgt = new Thread( cg );
+        cgt.start();
+
         /*
         OneWireLightShow owls = OneWireLightShow.getInstance();
         Thread owlst = new Thread(owls);
