@@ -3,9 +3,16 @@ import com.dalsemi.onewire.adapter.*;
 import com.dalsemi.onewire.container.*;
 
 class OneWireLights {
+    
+    /**
+     * 1-Wire bus adapter
+     */
     private DSPortAdapter adapter = null;
-    //Stuff here.
-    protected String[] lights = new String[6];
+    
+    /**
+     * 1-Wire IDs of the switches
+     */
+    protected String[] lights = ConfigMgr.getInstance().getLights();
 
     private static OneWireLights instance = null;
 
@@ -18,13 +25,6 @@ class OneWireLights {
     
     private OneWireLights() {
 
-        lights[0] = new String();
-        lights[1] = new String("AE0000000E19A805");
-        lights[2] = new String("A60000000E112C05");
-        lights[3] = new String("BB0000000E069D05");
-        lights[4] = new String("F80000000E1A7C05");
-        lights[5] = new String("660000000E169505");
-
         try {
             this.adapter = OneWireAccessProvider.getDefaultAdapter();
         }catch( Exception e ) {
@@ -32,6 +32,13 @@ class OneWireLights {
         }
     }
 
+    /**
+     * Get the OneWireContainer associated with the given 1-Wire id
+     *
+     * @param id 1-Wire Device ID to fetch
+     *
+     * @return OneWireContainer corresponding to the 1-wire id
+     */
     protected OneWireContainer05 getSwitch( String id ) {
         System.out.println( "Getting Light: " + id );
         OneWireContainer owc = this.adapter.getDeviceContainer( id );
@@ -43,6 +50,12 @@ class OneWireLights {
         }
     }
 
+    /**
+     * Set the status light of a slot
+     *
+     * @param slot Slot number to change light for
+     * @param empty Empty status to set light to (true = on)
+     */
     public void slotStatus( int slot, boolean empty) {
         OneWireContainer05 owc = getSwitch( lights[slot] );
 

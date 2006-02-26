@@ -1,19 +1,50 @@
+import java.io.*;
+
 /**
  * @author Angelo DiNardi (adinardi@csh.rit.edu)
  */
 class ConfigMgr {
     private static ConfigMgr instance = null;
-    
+
     /**
      * The connected state of the client to the server
      */
     private boolean connected = false;
 
-    //1 based int for the number of slots in the system
+    /**
+     * 1 based int for the number of slots in the system
+     */
     private int numSlots = 5;
-    
-    private ConfigMgr() {
 
+    /**
+     * Contains the 1-Wire IDs of the Motor Switches
+     */
+    private String[] switches = new String[numSlots + 1]; //add one to make it a 1-based array
+    
+    /**
+     * Contains the 1-Wire IDs of the Light Switches
+     */
+    private String[] lights = new String[numSlots + 1]; //add one to make it a 1-based array
+
+
+    private ConfigMgr() {
+        /*
+         switches[0] = new String();
+         switches[1] = new String("830000000E0ACC05");
+         switches[2] = new String("C60000000E153305");
+         switches[3] = new String("750000000E178205");
+         switches[4] = new String("450000000E19AD05");
+         switches[5] = new String("2C0000000E1B2D05");
+
+         lights[0] = new String();
+         lights[1] = new String("AE0000000E19A805");
+         lights[2] = new String("A60000000E112C05");
+         lights[3] = new String("BB0000000E069D05");
+         lights[4] = new String("F80000000E1A7C05");
+         lights[5] = new String("660000000E169505");
+         */
+
+        readConfig();
     }
 
     public static ConfigMgr getInstance() {
@@ -33,5 +64,57 @@ class ConfigMgr {
 
     public int getNumSlots() {
         return numSlots;
+    }
+
+    public String[] getSwitches() {
+        return switches;
+    }
+
+    public String[] getLights() {
+        return lights;
+    }
+
+    private void readConfig() {
+        try {
+        BufferedReader in = new BufferedReader( new FileReader("config") );
+
+        String temp = null;
+        int num = 0;
+        String id = null;
+
+        while( (temp = in.readLine()) != null ) {
+            if( temp.charAt(0) == 's' ) { //switch id
+                System.out.println( "Got Switch Row" );
+                if( temp.charAt(1) == 't' ) { //total #
+                    this.numSlots = Integer.parseInt(temp.substring(2));
+                    this.switches = new String[this.numSlots + 1];
+                    System.out.println( "Got Switch Total: " + this.switches.length );
+                    continue;
+                }
+
+                num = Integer.parseInt(temp.substring(1,3));
+                id = temp.substring(4);
+                System.out.println( "" + num + " : " + id );
+                this.switches[num] = id;
+                
+            }else if( temp.charAt(0) == 'l' ) { //light id
+                System.out.println( "Got Light Row" );
+                if( temp.charAt(1) == 't' ) { //total #
+                    this.lights = new String[Integer.parseInt( temp.substring(2) ) + 1 ];
+                    System.out.println( "Got Light Total: " + this.lights.length );
+                    continue;
+                }
+
+                num = Integer.parseInt(temp.substring(1,3));
+                id = temp.substring(4);
+                System.out.println( "" + num + " : " + id );
+                this.lights[num] = id;
+                
+            }
+        }
+        }catch( Exception e ) {
+            
+        }
+
     }
 }

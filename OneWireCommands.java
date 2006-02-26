@@ -20,14 +20,29 @@ import com.dalsemi.onewire.application.monitor.*;
  * @author Angelo DiNardi
  */
 public class OneWireCommands {
+    /**
+     * 1-Wire bus adapter
+     */
     private DSPortAdapter adapter = null;
-    //Stuff here.
-    protected String[] switches = new String[6];
-    protected String[] lights = new String[6];
+    
+    /**
+     * 1-Wire IDs of the switches
+     */
+    protected String[] switches = ConfigMgr.getInstance().getSwitches();
+    
+    /**
+     * Empty states for each switch/slot
+     */
     protected boolean[] empty = new boolean[6];
 
+    /**
+     * DeviceMonitor to monitor appearing/disapearing 1-wire devices
+     */
     private DeviceMonitor dm = null;
 
+    /**
+     * Number of Slots available in the machine
+     */
     private int numSlots = ConfigMgr.getInstance().getNumSlots();
     
     private static OneWireCommands instance = null;
@@ -41,23 +56,6 @@ public class OneWireCommands {
     }
 
     protected OneWireCommands() {
-        //hard coded the lights for right now
-        switches[0] = new String();
-        switches[1] = new String("830000000E0ACC05");
-        switches[2] = new String("C60000000E153305");
-        switches[3] = new String("750000000E178205");
-        switches[4] = new String("450000000E19AD05");
-        switches[5] = new String("2C0000000E1B2D05");
-
-        /*
-         lights[0] = new String();
-         lights[1] = new String("AE0000000E19A805");
-         lights[2] = new String("A60000000E112C05");
-         lights[3] = new String("BB0000000E069D05");
-         lights[4] = new String("F80000000E1A7C05");
-         lights[5] = new String("660000000E169505");
-         */
-
         try {
             this.adapter = OneWireAccessProvider.getDefaultAdapter();
         }catch( Exception e ) {
@@ -65,14 +63,7 @@ public class OneWireCommands {
         }
 
         System.out.println( "Check Empty Slots" );
-        //run through all the switches and check empty state
-        /*
-         for( int q = 1; q <= 5; q++ ) {
-         isEmpty( q );
-         }
-         System.out.println( "Checked All Slots" );
-         */
-
+        
         //reset all the slots to empty
         for( int q = 1; q <= numSlots; q++ ) {
             empty[q] = true;
@@ -150,9 +141,8 @@ public class OneWireCommands {
             }
         }
 
-        //****Replaced by DM?*****
         //check is empty for status?
-        //isEmpty( slot );
+        isEmpty( slot );
 
         //end use of the bus
         adapter.endExclusive();
