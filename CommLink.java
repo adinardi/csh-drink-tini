@@ -48,14 +48,22 @@ public class CommLink{
     /**
      * Start the connection sequence to the drink server.
      */
-    private void StartConnection() {
+    private synchronized void StartConnection() {
+        if( ConfigMgr.getInstance().getConnected() == true ) { return; } //already connected. get out.
+
+        if( socket != null ) {
+            try {
+                socket.close();
+            }catch ( Exception e ) { }
+        }
+
         try {
             //connect to the drink server?
             socket = new Socket( host, port );
             System.out.println( "Connected" );
         }catch( Exception e ) {
             //e.printStackTrace();
-         
+
             System.out.println( "Error Connecting" );
             ConfigMgr.getInstance().setConnected( false ); //we didn't connect correctly, make sure we know that
             return;
@@ -70,14 +78,14 @@ public class CommLink{
         //for what we know, we're connected
         ConfigMgr.getInstance().setConnected( true );
     }//StartConnection()
- 
+
     /**
      * Launches the initial connection to the drink server
      */
     public void Connect() {
         while( ConfigMgr.getInstance().getConnected() == false ) {
             System.out.println( "Connecting..." );
-            
+
             StartConnection();
 
             if( ConfigMgr.getInstance().getConnected() == false ) {
