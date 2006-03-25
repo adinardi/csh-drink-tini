@@ -47,7 +47,7 @@ public class OneWireCommands {
     
     private static OneWireCommands instance = null;
 
-    public static OneWireCommands getInstance() {
+    public synchronized static OneWireCommands getInstance() {
         if( instance == null ) {
             instance = new OneWireCommands();
         }
@@ -83,7 +83,8 @@ public class OneWireCommands {
     public int drop ( int slot ) {
         byte[] state = {0,0,0};
         boolean latch = false;
-        OneWireContainer05 owc = null; 
+        OneWireContainer05 owc = null;
+        int dropTime = ConfigMgr.getInstance().getDropTime();
 
         dm.pauseMonitor( true );
 
@@ -105,6 +106,7 @@ public class OneWireCommands {
             latch = owc.getLatchState( 0, state );
         }catch( Exception e ) {
             e.printStackTrace();
+            System.out.println( "Error In Drop Code: Switch Reading" );
         }
 
         if( latch == true ) {
@@ -117,13 +119,20 @@ public class OneWireCommands {
             owc.writeDevice( state );
         }catch( OneWireIOException e ) {
             e.printStackTrace();
-        }catch( OneWireException e ) {}
+            System.out.println( "Error Setting Drop Latch On");
+        }catch( OneWireException e ) {
+            e.printStackTrace();
+            System.out.println( "Error Setting Drop Latch On");
+        }
 
         System.out.println( "Wait!" );
         //do the 2 second wait
         try {
-            Thread.sleep( 1500 );
-        }catch( Exception e ) {}
+            Thread.sleep( dropTime );
+        }catch( Exception e ) {
+            e.printStackTrace();
+            System.out.println( "Error Sleeping" );
+        }
 
         System.out.println( "Motor off!" );
         //turn the motor off
@@ -136,8 +145,10 @@ public class OneWireCommands {
                 owc.writeDevice( state );
             }catch( OneWireIOException e ) {
                 e.printStackTrace();
+                System.out.println( "Error Setting Drop Latch Off" );
             }catch( OneWireException e ){
                 e.printStackTrace();
+                System.out.println( "Error Setting Drop Latch Off" );
             }
         }
 
@@ -220,7 +231,8 @@ public class OneWireCommands {
             owc.setLatchState( 0, latch, false, state );
             owc.writeDevice( state );
         }catch( Exception e ) {
-
+            e.printStackTrace();
+            System.out.println( "Error Setting Latch State" );
         }
     }
 
@@ -236,7 +248,8 @@ public class OneWireCommands {
             state = owc.readDevice(); //we have to read it again. Doesn't actually give temperature otherwise.
             temp = owc.getTemperature( state ) * (9.0/5.0) + 32.0;
         }catch( Exception e ) {
-
+            e.printStackTrace();
+            System.out.println( "Error Reading Temperatures" );
         }
         dm.resumeMonitor( false );
         return temp;

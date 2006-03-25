@@ -130,7 +130,7 @@ public class CommLink{
         return inlink;
     }
 
-    public static CommLink getInstance() {
+    public synchronized static CommLink getInstance() {
         if( instance == null ) {
             instance = new CommLink();
         }

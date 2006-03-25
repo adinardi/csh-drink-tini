@@ -31,6 +31,12 @@ class ConfigMgr {
      */
     private String[] temps = new String[1];
 
+    /**
+     * Contains the timings for motor on time for drops
+     * Default is 1500 ms (1.5 seconds)
+     */
+    private int dropTime = 1500;
+
 
     private ConfigMgr() {
         /*
@@ -52,7 +58,7 @@ class ConfigMgr {
         readConfig();
     }
 
-    public static ConfigMgr getInstance() {
+    public synchronized static ConfigMgr getInstance() {
         if( instance == null ) {
             instance = new ConfigMgr();
         }
@@ -79,8 +85,20 @@ class ConfigMgr {
         return lights;
     }
 
+    public boolean runLights() {
+        if( lights.length == 0 ) {
+            return false;
+        }else{
+            return true;
+        }
+    }
+
     public String[] getTemps() {
         return temps;
+    }
+
+    public int getDropTime() {
+        return dropTime;
     }
 
     private void readConfig() {
@@ -132,11 +150,17 @@ class ConfigMgr {
                 System.out.println( "" + num + " : " + id );
                 this.temps[num] = id;
 
+            }else if( temp.charAt(0) == 'd' ) { //drink timing
+                System.out.println( "Got Drink Timing Row" );
+                
+                dropTime = Integer.parseInt(temp.substring(1));
+
             }
 
         }
         }catch( Exception e ) {
-
+            //There was a prolem loading the config. Lets print a message.
+            System.out.println("Error loading config.");
         }
 
     }

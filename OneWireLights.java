@@ -16,7 +16,7 @@ class OneWireLights {
 
     private static OneWireLights instance = null;
 
-    public static OneWireLights getInstance() {
+    public synchronized static OneWireLights getInstance() {
         if( instance == null ) {
             instance = new OneWireLights();
         }
@@ -57,6 +57,11 @@ class OneWireLights {
      * @param empty Empty status to set light to (true = on)
      */
     public void slotStatus( int slot, boolean empty) {
+        //if we don't have any lights loaded in, don't do anything.
+        if( !ConfigMgr.getInstance().runLights() ) {
+            return;
+        }
+        
         OneWireContainer05 owc = getSwitch( lights[slot] );
 
         try {

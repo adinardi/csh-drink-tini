@@ -21,6 +21,7 @@ class IncomingLink extends Thread {
             in = socket.getInputStream();
         }catch( Exception e ) {
             e.printStackTrace();
+            System.out.println( "Cannot get input stream");
         }
 
         int opcode = 0;
@@ -49,6 +50,7 @@ class IncomingLink extends Thread {
                 break;
             }catch( Exception e ) {
                 e.printStackTrace();
+                System.out.println( "Error reading Incoming Data.");
             }
             if( fullLine == null ) {
                 active = false;
