@@ -58,7 +58,7 @@ class OneWireLights {
      */
     public void slotStatus( int slot, boolean empty) {
         //if we don't have any lights loaded in, don't do anything.
-        if( !ConfigMgr.getInstance().runLights() ) {
+        if( lights == null ) {
             return;
         }
         

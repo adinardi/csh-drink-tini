@@ -23,7 +23,7 @@ class OutgoingLink extends Thread {
 
             out.writeBytes( "0" );
             //this should eventually pull from a config
-            out.writeBytes( "password" );
+            out.writeBytes( ConfigMgr.getInstance().getPassword() );
             out.writeBytes( "\n" );
             out.flush();
 
@@ -90,12 +90,17 @@ class OutgoingLink extends Thread {
     }
 
     public void sendSlotInfo( boolean[] empty ) {
+        //If the empty info hasn't been scanned from the machine yet, ignore.
+        if( empty[0] == false ) { return; }
+        
         try {
             out = new DataOutputStream( socket.getOutputStream() );
 
             out.writeBytes( "7" );
 
-            for( int x = 1; x < 6; x++ ) {
+            int slots = ConfigMgr.getInstance().getNumSlots() + 1;
+            
+            for( int x = 1; x < slots; x++ ) {
                 if( x > 1 ) {
                     out.writeBytes( "`" );
                 }

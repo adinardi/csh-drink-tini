@@ -7,6 +7,8 @@ class TempWorker extends Thread {
         double temp;
         OneWireCommands owc = OneWireCommands.getInstance();
 
+        owc.setTempRes();
+
         while( true ) {
             //grab temp
             //System.out.println( "Read Temp" );

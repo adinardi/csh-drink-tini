@@ -24,7 +24,7 @@ class ConfigMgr {
     /**
      * Contains the 1-Wire IDs of the Light Switches
      */
-    private String[] lights = new String[numSlots + 1]; //add one to make it a 1-based array
+    private String[] lights = null;//new String[numSlots + 1]; //add one to make it a 1-based array
 
     /**
      * Contains the 1-Wire IDs of the Temp Monitors
@@ -37,24 +37,13 @@ class ConfigMgr {
      */
     private int dropTime = 1500;
 
+    /**
+     * Contains the password for the machine to authenticate with the server
+     */
+    private String password = "";
+
 
     private ConfigMgr() {
-        /*
-         switches[0] = new String();
-         switches[1] = new String("830000000E0ACC05");
-         switches[2] = new String("C60000000E153305");
-         switches[3] = new String("750000000E178205");
-         switches[4] = new String("450000000E19AD05");
-         switches[5] = new String("2C0000000E1B2D05");
-
-         lights[0] = new String();
-         lights[1] = new String("AE0000000E19A805");
-         lights[2] = new String("A60000000E112C05");
-         lights[3] = new String("BB0000000E069D05");
-         lights[4] = new String("F80000000E1A7C05");
-         lights[5] = new String("660000000E169505");
-         */
-
         readConfig();
     }
 
@@ -85,8 +74,11 @@ class ConfigMgr {
         return lights;
     }
 
+    /**
+     *  Returns true if the machine has lights we should operate
+     */
     public boolean runLights() {
-        if( lights.length == 0 ) {
+        if( lights == null ) {
             return false;
         }else{
             return true;
@@ -99,6 +91,10 @@ class ConfigMgr {
 
     public int getDropTime() {
         return dropTime;
+    }
+
+    public String getPassword() {
+        return password;
     }
 
     private void readConfig() {
@@ -127,8 +123,12 @@ class ConfigMgr {
             }else if( temp.charAt(0) == 'l' ) { //light id
                 System.out.println( "Got Light Row" );
                 if( temp.charAt(1) == 't' ) { //total #
-                    this.lights = new String[Integer.parseInt( temp.substring(2) ) + 1 ];
-                    System.out.println( "Got Light Total: " + this.lights.length );
+                    if( Integer.parseInt(temp.substring(2)) != 0 ) { 
+                        this.lights = new String[Integer.parseInt( temp.substring(2) ) + 1 ];
+                        System.out.println( "Got Light Total: " + this.lights.length );
+                    }else{
+                        System.out.println( "Lights Disabled" );
+                    }
                     continue;
                 }
 
@@ -155,6 +155,10 @@ class ConfigMgr {
                 
                 dropTime = Integer.parseInt(temp.substring(1));
 
+            }else if( temp.charAt(0) == 'p' ) { //password row
+                System.out.println( "Got Drink Server Password" );
+
+                password = temp.substring(1);
             }
 
         }

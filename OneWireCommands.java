@@ -32,8 +32,11 @@ public class OneWireCommands {
     
     /**
      * Empty states for each switch/slot
+     *
+     * empty[0] = false indicated not initially scanned, empty[0] = true -> slots have
+     * been scanned.
      */
-    protected boolean[] empty = new boolean[6];
+    protected boolean[] empty = new boolean[ConfigMgr.getInstance().getNumSlots() + 1];
 
     /**
      * DeviceMonitor to monitor appearing/disapearing 1-wire devices
@@ -70,8 +73,14 @@ public class OneWireCommands {
             
             //initialize all the lights to empty to start
             OneWireLights.getInstance().slotStatus( q, empty[q] );
+
+            isEmpty( q ); //check the slot for emptyness
         }
 
+        empty[0] = true; //let us know that it's been scanned initially.
+
+        CommLink.getInstance().getOutgoingLink().sendSlotInfo( empty ); //lets send the server our slot info
+        
         //load the DeviceMonitor to watch the bus for slots to appear/disapear
         //This will also find everything when it loads -- so the slots are activated
         dm = new DeviceMonitor( adapter );
@@ -253,6 +262,23 @@ public class OneWireCommands {
         }
         dm.resumeMonitor( false );
         return temp;
+    }
+
+    public void setTempRes() {
+        dm.pauseMonitor( true );
+
+        OneWireContainer28 owc = (OneWireContainer28) this.adapter.getDeviceContainer( ConfigMgr.getInstance().getTemps()[0] );
+
+        try {
+            byte[] state = owc.readDevice();
+            owc.setTemperatureResolution( owc.RESOLUTION_12_BIT, state );
+            owc.writeDevice( state );
+        }catch( Exception e ) {
+            e.printStackTrace();
+            System.out.println( "Error Setting Temp Resolution" );
+        }
+        
+        dm.resumeMonitor( false );
     }
 
     public boolean[] getEmptyInfo() {

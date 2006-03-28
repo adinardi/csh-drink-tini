@@ -48,6 +48,11 @@ class IncomingLink extends Thread {
                 ConfigMgr.getInstance().setConnected( false );
                 CommLink.getInstance().Reconnect();
                 break;
+            }catch( IOException e ) {
+                System.out.println( "Lost Connection To Server" );
+                ConfigMgr.getInstance().setConnected( false );
+                CommLink.getInstance().Reconnect();
+                break;
             }catch( Exception e ) {
                 e.printStackTrace();
                 System.out.println( "Error reading Incoming Data.");
