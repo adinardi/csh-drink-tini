@@ -92,7 +92,7 @@ class OutgoingLink extends Thread {
     public void sendSlotInfo( boolean[] empty ) {
         //If the empty info hasn't been scanned from the machine yet, ignore.
         if( empty[0] == false ) { return; }
-        
+        System.out.println( "Sending Complete Slot Info" );
         try {
             out = new DataOutputStream( socket.getOutputStream() );
 

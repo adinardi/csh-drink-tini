@@ -75,6 +75,7 @@ class IncomingLink extends Thread {
                 case 1:
                     //Login ACK
                     System.out.println( "Login ACK!" );
+                    CommLink.getInstance().getOutgoingLink().sendSlotInfo( OneWireCommands.getInstance().getEmptyInfo() );
                     break;
                 case 2:
                     //Login NACK
@@ -85,7 +86,9 @@ class IncomingLink extends Thread {
                     System.out.println( "Drop Slot!" );
                     //OneWireLightShow.getInstance().setStop( true );
 
+                    this.setPriority( Thread.MAX_PRIORITY );
                     int stat = OneWireCommands.getInstance().drop( Integer.parseInt(data) );
+                    this.setPriority( Thread.NORM_PRIORITY );
 
                     if( stat == 200 ) {
                         CommLink.getInstance().getOutgoingLink().sendDropACK();

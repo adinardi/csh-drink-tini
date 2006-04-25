@@ -161,6 +161,10 @@ public class OneWireCommands {
             }
         }
 
+        try {
+            Thread.sleep( 2000 );
+        }catch ( Exception e ) {}
+        
         //check is empty for status?
         isEmpty( slot );
 
