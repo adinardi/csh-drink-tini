@@ -1,0 +1,12 @@
+########
+#Autogen'd slush startup file
+setenv FTPServer enable
+setenv TelnetServer enable
+setenv SerialServer enable
+##
+#Add user calls to setenv here:
+##
+initializeNetwork
+########
+#Add other user additions here:
+source start
