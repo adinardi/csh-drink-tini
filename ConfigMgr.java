@@ -30,6 +30,10 @@ class ConfigMgr {
      * Contains the 1-Wire IDs of the Temp Monitors
      */
     private String[] temps = null; //new String[1];
+    
+    private String doorID = null;
+    
+    private String motorSwitchID = null;
 
     /**
      * Contains the timings for motor on time for drops
@@ -73,7 +77,15 @@ class ConfigMgr {
     public String[] getLights() {
         return lights;
     }
-
+    
+    public String getMotorSwitchID() {
+        return motorSwitchID;
+    }
+    
+    public String getDoorID() {
+        return doorID;
+    }
+    
     /**
      *  Returns true if the machine has lights we should operate
      */
@@ -174,6 +186,12 @@ class ConfigMgr {
                 System.out.println( "Got Drink Server Password" );
 
                 password = temp.substring(1);
+            }else if( temp.charAt(0) == 'i' ) { // Scott: i stands for interlock!
+                if (temp.charAt(1) == 'd' ) {
+                    
+                } else if (temp.charAt(1) == 'm') {
+                    
+                }
             }
 
         }
