@@ -166,7 +166,9 @@ public class OneWireCommands {
         }catch ( Exception e ) {}
         
         //check is empty for status?
+        System.out.println("isEmpty Check Starting...");
         isEmpty( slot );
+        System.out.println("isEmpty Check Done");
 
         //end use of the bus
         adapter.endExclusive();

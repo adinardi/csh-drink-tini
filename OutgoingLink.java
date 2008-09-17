@@ -35,8 +35,9 @@ class OutgoingLink extends Thread {
 
     public void sendDropACK() {
         try {
+            System.out.println("Sending Drop ACK");
             out = new DataOutputStream(socket.getOutputStream());
-
+            System.out.println("Writing 4");
             out.writeBytes( "4\n" );
             out.flush();
 
@@ -44,6 +45,7 @@ class OutgoingLink extends Thread {
             e.printStackTrace();
             CommLink.getInstance().Reconnect();
         }
+        System.out.println("ack'ed");
     }
 
     public void sendTemp( double temp ) {

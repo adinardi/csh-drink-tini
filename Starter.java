@@ -16,9 +16,11 @@ class Starter {
         //Start up the OneWireCommands which will make the initial empty sensor load.
         OneWireCommands.getInstance();
         
-        //start up our minutely temperature sensor/sender
-        TempWorker temp = new TempWorker();
-        temp.start();
+        if (ConfigMgr.getInstance().runTemps()) {
+          //start up our minutely temperature sensor/sender
+          TempWorker temp = new TempWorker();
+          temp.start();
+        }
 
         CollectGarbage cg = new CollectGarbage();
         Thread cgt = new Thread( cg );

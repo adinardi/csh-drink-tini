@@ -29,7 +29,7 @@ class ConfigMgr {
     /**
      * Contains the 1-Wire IDs of the Temp Monitors
      */
-    private String[] temps = new String[1];
+    private String[] temps = null; //new String[1];
 
     /**
      * Contains the timings for motor on time for drops
@@ -88,6 +88,17 @@ class ConfigMgr {
     public String[] getTemps() {
         return temps;
     }
+    
+    /**
+     *  Return true if tempterature sensors exist in the system
+     */
+    public boolean runTemps() {
+        if (temps == null) {
+            return false;
+        } else {
+            return true;
+        }
+    }
 
     public int getDropTime() {
         return dropTime;
@@ -140,9 +151,13 @@ class ConfigMgr {
             }else if( temp.charAt(0) == 't' ) { //temp id
                 System.out.println( "Got Temp Row" );
                 if( temp.charAt(1) == 't' ) { //total #
+                  if (Integer.parseInt(temp.substring(2)) != 0) {
                     this.temps = new String[Integer.parseInt( temp.substring(2) ) ];
                     System.out.println( "Got Temps Total: " + this.temps.length );
-                    continue;
+                  } else {
+                    System.out.println("Temp Disabled");
+                  } 
+                  continue;
                 }
 
                 num = Integer.parseInt(temp.substring(1,3));

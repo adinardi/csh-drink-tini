@@ -89,7 +89,7 @@ class IncomingLink extends Thread {
                     this.setPriority( Thread.MAX_PRIORITY );
                     int stat = OneWireCommands.getInstance().drop( Integer.parseInt(data) );
                     this.setPriority( Thread.NORM_PRIORITY );
-
+                    System.out.println("About to send drop ack... " + stat);
                     if( stat == 200 ) {
                         CommLink.getInstance().getOutgoingLink().sendDropACK();
                     }else{

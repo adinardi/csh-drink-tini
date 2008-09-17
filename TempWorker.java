@@ -15,7 +15,9 @@ class TempWorker extends Thread {
             temp = owc.readTemp();
             
             //send it
-            CommLink.getInstance().getOutgoingLink().sendTemp( temp );
+            if( temp != 0 ) {
+                CommLink.getInstance().getOutgoingLink().sendTemp( temp );
+            }
             //System.out.println( "Sending" );
             
             //sleep
