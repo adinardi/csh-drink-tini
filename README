@@ -1,0 +1,3 @@
+This is the implementation of Computer Science House's Drink Machine project's machine software.
+
+This software runs on Maxim/Dallas Semiconductor's TINI Board hardware. You need the TINI firmware package to be able to build this code.
