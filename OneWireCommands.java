@@ -88,7 +88,7 @@ public class OneWireCommands {
         Thread dmrun = new Thread( dm );
         dmrun.start();
     }
-
+    
     public int drop ( int slot ) {
         byte[] state = {0,0,0};
         boolean latch = false;
@@ -97,12 +97,29 @@ public class OneWireCommands {
 
         dm.pauseMonitor( true );
 
+        // Fail the drop if we're in a bad state
+        if (!checkSensor(ConfigMgr.getInstance().getDoorID()) &&
+            !checkSensor(ConfigMgr.getInstance().getMotorSwitchID())) {
+            System.out.println("Door is open AND motor switch is off!");
+            dm.resumeMonitor( false );
+            return 304;
+        } else if (!checkSensor(ConfigMgr.getInstance().getDoorID())) {
+            System.out.println("Door is open!");
+            dm.resumeMonitor( false );
+            return 304;
+        } else if (!checkSensor(ConfigMgr.getInstance().getMotorSwitchID())) {
+            System.out.println("Motor switch is off!");
+            dm.resumeMonitor( false );
+            return 304;
+        }
+
         try {
             //check if slot is empty
             if( isEmpty( slot ) ) {
                 //return empty code
                 System.out.println( "Slot is empty!" );
                 //CommLink.getInstance().getOutgoingLink().sendDropNACK();
+                dm.resumeMonitor( false );
                 return 304; //Slot is Empty
             } 
             System.out.println( "Getting Exclusive" );
@@ -175,6 +192,24 @@ public class OneWireCommands {
         dm.resumeMonitor( false );
         return 200; 
     }
+    
+    public boolean checkSensor(String sensorID) {
+        // If we have a bad sensor ID, just assume we're OK!
+        if (sensorID == null) {
+            return true;
+        }
+        boolean found = false;
+        try {
+            if (this.adapter.isPresent(sensorID)) {
+                found = true;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        
+        return found;
+    }
+
 
     /**
      * Check a slot's empty switch manually and if it has changed, notify the system.

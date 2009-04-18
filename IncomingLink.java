@@ -95,6 +95,8 @@ class IncomingLink extends Thread {
                     }else{
                         CommLink.getInstance().getOutgoingLink().sendDropNACK();
                     }
+                    // Send our entire slot status!
+                    CommLink.getInstance().getOutgoingLink().sendSlotInfo( OneWireCommands.getInstance().getEmptyInfo() );
                     //OneWireLightShow.getInstance().setStop( false );
                     break;
                 case 6:

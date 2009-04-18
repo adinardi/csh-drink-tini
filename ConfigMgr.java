@@ -188,9 +188,11 @@ class ConfigMgr {
                 password = temp.substring(1);
             }else if( temp.charAt(0) == 'i' ) { // Scott: i stands for interlock!
                 if (temp.charAt(1) == 'd' ) {
-                    
+                    doorID = temp.substring(3);
+                    System.out.println( "Got door sensor ibutton id: " + doorID );
                 } else if (temp.charAt(1) == 'm') {
-                    
+                    motorSwitchID = temp.substring(3);
+                    System.out.println( "Got motor sensor ibutton id: " + motorSwitchID );
                 }
             }
 

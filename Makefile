@@ -3,9 +3,11 @@ PATH=/usr/bin:/opt/sun-jdk-1.5.0.06/bin/
 #TINICODE = ../tini1.02g/
 #TINICONVLINE = java -classpath ../tini1.02g/bin/tini.jar BuildDependency -d ../tini1.02g/bin/tini.db -add OneWireContainer05 -add OneWireContainer28 -add OneWireMonitor -x ../tini1.02g/bin/owapi_dep.txt -p ../tini1.02g/bin/owapi_dependencies_TINI.jar 
 
+# BDM & SNACK
 TINICODE = ../tini1.02h/
 TINICONVLINE = java -classpath ../tini1.02h/bin/tini.jar BuildDependency -d ../tini1.02h/bin/tini.db -add OneWireContainer05 -add OneWireContainer28 -add OneWireMonitor -x ../tini1.02h/bin/owapi_dep.txt -p ../tini1.02h/bin/owapi_dependencies_TINI.jar 
 
+# LDM
 #TINICODE = ../tini1.17/
 #TINICONVLINE = java -classpath ../tini1.17/bin/tini.jar BuildDependency -d ../tini1.17/bin/tini.db -add OneWireContainer05 -add OneWireContainer28 -add OneWireMonitor -x ../tini1.17/bin/owapi_dep.txt -p ../tini1.17/bin/owapi_dependencies_TINI.jar 
 
